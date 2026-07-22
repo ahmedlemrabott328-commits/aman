@@ -1,48 +1,59 @@
-# AMAN Admin — لوحة إدارة (React + TypeScript + Tailwind)
+# AMAN Captain — تطبيق الكابتن (Flutter)
 
-لوحة إدارة كاملة لمنصة AMAN، مبنية لتعمل مباشرة مع [aman-backend](../aman-backend) (Laravel API).
+تطبيق الكابتن الكامل لمنصة AMAN، Material Design 3، يعمل مباشرة مع [aman-backend](../aman-backend).
 
-## الهوية البصرية
-
-- **الألوان:** نيلي (`#2E3A6E`) مستوحى من صبغة النيلة الموريتانية التقليدية + رملي دافئ (`#F6F1E7`) + ذهبي (`#C1922E`) للتمييز. راجع `tailwind.config.js`.
-- **الطباعة:** Cairo للواجهة (عربي/لاتيني)، IBM Plex Mono للأرقام والمبالغ وأكواد الرحلات (فئة `.tabular` في `index.css`).
-- **الاتجاه:** RTL افتراضيًا (`<html dir="rtl">`)، الشريط الجانبي على اليمين.
-
-## البنية
+## البنية (Clean Architecture حسب الميزة)
 
 ```
-src/
-├── types/index.ts          # أنواع مطابقة تمامًا لـ API Resources في aman-backend
-├── lib/api.ts               # عميل Axios مركزي (توكن تلقائي + معالجة 401)
-├── hooks/useApi.ts          # usePaginatedResource / useResource (بديل خفيف عن react-query)
-├── contexts/AuthContext.tsx # جلسة الأدمن + نظام الصلاحيات (can(permission))
-├── components/
-│   ├── ui/                  # Button, Badge, Card, Input, Select, Modal, Table, Pagination
-│   ├── layout/               # Sidebar (يُخفي العناصر حسب الصلاحية تلقائيًا)، Topbar، AppLayout
-│   └── ProtectedRoute.tsx
-└── pages/                    # صفحة لكل قسم من قسم 13 بالمواصفات
-    ├── LoginPage, DashboardPage, CustomersPage, CaptainsPage
-    ├── TripsPage, PricingPage (تسعير + عمولات بتبويبين), CitiesPage, WalletsPage
+lib/
+├── core/
+│   ├── theme/            # AppColors + AppTheme (نفس هوية AMAN: نيلي/رملي/ذهبي، Cairo + IBM Plex Mono)
+│   ├── network/           # ApiClient (Dio) + ApiException موحّد
+│   ├── storage/            # TokenStorage (flutter_secure_storage)
+│   ├── realtime/           # RealtimeService (Reverb عبر pusher_channels_flutter)
+│   ├── router/             # GoRouter + حراسة الجلسة التلقائية
+│   └── providers.dart      # حقن الاعتماديات المركزي (DI عبر Riverpod)
+└── features/
+    ├── auth/               # OTP: إدخال الهاتف → التحقق → تسجيل الدخول
+    ├── documents/          # رفع وثائق الاعتماد (رخصة، بطاقة، استمارة، تأمين)
+    ├── home/               # الخريطة + مفتاح متصل/غير متصل + استقبال عروض الرحلات لحظيًا
+    ├── trip/                # الرحلة النشطة: قبول → وصول → بدء → إنهاء يدويًا
+    ├── wallet/              # الرصيد وسجل الحركات
+    ├── history/             # سجل الرحلات السابقة
+    └── profile/             # الملف الشخصي وتسجيل الخروج
 ```
 
-## نقاط تصميمية مهمة
+كل ميزة مقسّمة إلى `data` (Repository) / `domain` (Models) / `presentation` (Controller + Screens)، وكل الاعتماديات محقونة عبر Riverpod Providers بدل الإنشاء المباشر — يخدم مبدأي Dependency Injection وSOLID المطلوبين بالمواصفات.
 
-- **الصلاحيات (RBAC) في الواجهة أيضًا:** `Sidebar` يُخفي أي رابط لا يملك الأدمن الحالي صلاحيته (`can('captains.view')`)، مطابقةً لما يفرضه Backend فعليًا على مستوى الـ API — الواجهة لا "تخترع" صلاحيات، فقط تعكس ما يُرجعه `/auth/login`.
-- **اعتماد الكباتن:** `CaptainsPage` تفتح لوحة تفاصيل كاملة (Modal) تعرض كل وثيقة مع إمكانية قبول/رفض كل وثيقة على حدة قبل تفعيل زر "اعتماد الكابتن" — يعكس تدفق العمل الحقيقي (لا يمكن الاعتماد دون مراجعة الوثائق أولاً، وهذا مفروض أيضًا من Backend: `PATCH /captains/{id}/approve` يرفض الطلب إن كانت أي وثيقة غير معتمدة).
-- **تعديل الرصيد اليدوي:** موجود في `WalletsPage` مع تنويه صريح أن كل تعديل يُسجَّل في Audit Log — شفافية للمستخدم بدل تعديل صامت.
+## تدفق العمل الأساسي (يطابق القسم 5 من المواصفات)
 
-## القيود المعروفة (Known Limitations)
+1. **تسجيل الدخول (OTP):** `PhoneEntryScreen` → `OtpVerifyScreen` → عند النجاح يُخزَّن التوكن في Secure Storage ويُعاد التوجيه تلقائيًا (`GoRouter.redirect` يراقب `AuthState` لحظيًا).
+2. **رفع الوثائق:** `DocumentsScreen` — 4 وثائق أساسية (رخصة، بطاقة وطنية، استمارة، تأمين)، كل وثيقة تُرفع وتظهر حالتها (بانتظار المراجعة) فور الرفع.
+3. **الاتصال/عدم الاتصال:** مفتاح في `HomeScreen` يستدعي `/status/toggle`، ويُفعِّل بث الموقع كل 20 مترًا عبر `Geolocator.getPositionStream` عند التفعيل.
+4. **استقبال طلب رحلة:** `RealtimeService` يشترك في القناة الخاصة `captain.{id}`؛ فور وصول `trip.offer.new` تظهر `TripOfferSheet` بعدّاد تنازلي مطابق تمامًا لمهلة الخادم (15 ثانية)، مع قبول/رفض.
+5. **الرحلة النشطة:** `TripActiveScreen` تعرض بيانات الزبون (مع زر اتصال مباشر `tel:`)، والعنوان، والسعر، وزر الإجراء يتغيّر تلقائيًا حسب حالة الرحلة (وصلت → بدء → إنهاء).
+6. **الأرباح والمحفظة:** `WalletScreen` تعرض الرصيد الحالي (بخط IBM Plex Mono للوضوح الرقمي) وسجل الحركات.
 
-- **قائمة الخدمات (Services) مُثبَّتة يدويًا** في `PricingPage.tsx` (`SERVICES` بالمعرفات 1/2/3) لعدم وجود `GET /services` في الـ API الحالي. إن تغيّر ترتيب الإدخال في `ServicesAndCitiesSeeder`، يجب تحديث هذا الثابت أو إضافة endpoint فعلي.
-- لا يوجد بعد اختبارات (Unit/E2E) — يُنصح بإضافة Vitest + Testing Library قبل الإنتاج.
-- التوطين (i18n) الفعلي لثلاث اللغات (AR/FR/EN) غير مُفعَّل بعد؛ كل النصوص حاليًا عربية مباشرة داخل المكوّنات. البنية (RTL + الخط) جاهزة لإضافة `react-i18next` لاحقًا دون إعادة هيكلة.
+## القيود المعروفة (بصراحة كاملة)
+
+- **رفع الملفات الفعلي غير مُنفَّذ بعد.** `DocumentsScreen` يلتقط صورة عبر `image_picker` لكنه يرسل رابطًا وهميًا (`fakeUrl`) بدل رفع حقيقي لخدمة تخزين (S3/Local) — لأن endpoint الرفع الفعلي لم يُبنَ بعد في `aman-backend`. البنية جاهزة لاستبدال هذا السطر بمجرد توفر endpoint الرفع.
+- **`pusher_channels_flutter` API قابلة للتغيّر بين الإصدارات.** التوقيعات المستخدمة في `RealtimeService` مطابقة للإصدار `^2.4.1` وقت الكتابة؛ تحقّق من التوثيق الفعلي عند `flutter pub get` إن ظهرت أخطاء توافق.
+- **لا يوجد endpoint `/me`** لاسترجاع بيانات الكابتن من التوكن مباشرة عند إعادة فتح التطبيق؛ حاليًا إن وُجد توكن مخزَّن يُعتبر صالحًا مبدئيًا، ويُعاد التوجيه لتسجيل الدخول فقط عند أول رد `401` فعلي من الخادم.
+- **لا توجد اختبارات بعد** (Unit/Widget) — يُنصح بإضافتها قبل الإنتاج، خصوصًا لمنطق `TripController` و`HomeController`.
+- **خرائط OpenStreetMap مجانية** (`flutter_map` + tile.openstreetmap.org) بدل Google Maps لتفادي الحاجة لمفتاح API مدفوع؛ يمكن استبدالها لاحقًا إن رغبت بمزايا Google (Traffic، ETA أدق).
 
 ## التشغيل محليًا
 
 ```bash
-npm install
-cp .env.example .env   # عدّل VITE_API_URL إن كان الـ Backend على منفذ/نطاق مختلف
-npm run dev
+flutter pub get
+
+# على محاكي أندرويد، 10.0.2.2 تُترجم إلى localhost على جهاز التطوير (القيمة الافتراضية جاهزة)
+flutter run \
+  --dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1/captain \
+  --dart-define=BROADCAST_AUTH_URL=http://10.0.2.2:8000/broadcasting/auth \
+  --dart-define=REVERB_HOST=10.0.2.2 \
+  --dart-define=REVERB_PORT=8080 \
+  --dart-define=REVERB_APP_KEY=<REVERB_APP_KEY من .env الخاص بـ aman-backend>
 ```
 
-الدخول التجريبي (من `RolesAndPermissionsSeeder` في aman-backend): `admin@aman.mr` / `ChangeMe123!` — **غيّر كلمة المرور فورًا في الإنتاج**.
+على جهاز/محاكي iOS استبدل `10.0.2.2` بعنوان IP الفعلي لجهاز التطوير على الشبكة المحلية.
