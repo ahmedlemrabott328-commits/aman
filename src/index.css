@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-feature-settings: 'tnum' 1;
+  }
+  body {
+    @apply bg-sand text-ink antialiased;
+  }
+  /* الأرقام والمبالغ والأكواد تُعرض دائمًا بخط Mono بغض النظر عن اتجاه الصفحة */
+  .tabular {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+}
+
+@layer utilities {
+  /* النقش الهندسي المستوحى من الزخارف الموريتانية — يُستخدم بخفة شديدة فقط
+     في شاشة الدخول والحالات الفارغة، وليس كخلفية عامة */
+  .pattern-khatem {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%232E3A6E' stroke-opacity='0.06' stroke-width='1'%3E%3Cpath d='M30 2 L58 30 L30 58 L2 30 Z'/%3E%3Cpath d='M30 16 L44 30 L30 44 L16 30 Z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 60px 60px;
+  }
+}
