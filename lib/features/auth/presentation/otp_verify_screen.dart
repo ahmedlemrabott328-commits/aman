@@ -27,7 +27,6 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
           _codeController.text.trim(),
           fullName: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
         );
-    // التنقل لشاشة الرئيسية يتم تلقائيًا عبر GoRouter's redirect عند تغيّر authState.step
   }
 
   @override
@@ -55,7 +54,6 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
                 style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: 12),
                 decoration: const InputDecoration(counterText: '', hintText: '••••'),
               ),
-              // اسم الكابتن يظهر فقط عند أول تسجيل (الخادم يحدّد ذلك؛ نعرضه دائمًا اختياريًا لتبسيط الواجهة)
               const SizedBox(height: 12),
               TextField(
                 controller: _nameController,

@@ -3,9 +3,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'network/api_client.dart';
 import 'storage/token_storage.dart';
 
-/// نقطة تسجيل مركزية لكل الاعتماديات المشتركة (Dependency Injection عبر Riverpod)
-/// بدل تمرير كل اعتمادية يدويًا عبر الـ Constructors في كل مكان.
-
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) => const FlutterSecureStorage());
 
 final tokenStorageProvider = Provider<TokenStorage>((ref) {

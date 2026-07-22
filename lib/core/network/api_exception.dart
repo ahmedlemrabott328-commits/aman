@@ -1,5 +1,5 @@
 /// استثناء موحّد لكل أخطاء الـ API — يحوّل رسالة الخادم (بصيغتنا الموحّدة
-/// { success, message, errors }) إلى رسالة قابلة للعرض مباشرة للكابتن
+/// { success, message, errors }) إلى رسالة قابلة للعرض مباشرة للزبون
 class ApiException implements Exception {
   ApiException(this.message, {this.statusCode});
 

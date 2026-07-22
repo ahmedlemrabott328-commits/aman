@@ -46,17 +46,9 @@ class _PhoneEntryScreenState extends ConsumerState<PhoneEntryScreen> {
               const Spacer(flex: 2),
               const Center(child: AppLogo(size: 72)),
               const SizedBox(height: 16),
-              Text(
-                'AMAN — الكابتن',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+              Text('AMAN', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 4),
-              Text(
-                'سجّل الدخول لاستقبال طلبات الرحلات',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              Text('نقلك الذكي في موريتانيا', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 40),
               Form(
                 key: _formKey,
@@ -65,11 +57,7 @@ class _PhoneEntryScreenState extends ConsumerState<PhoneEntryScreen> {
                   keyboardType: TextInputType.phone,
                   textDirection: TextDirection.ltr,
                   style: const TextStyle(fontWeight: FontWeight.w600),
-                  decoration: const InputDecoration(
-                    prefixText: '+222  ',
-                    hintText: '4X XX XX XX',
-                    labelText: 'رقم الهاتف',
-                  ),
+                  decoration: const InputDecoration(prefixText: '+222  ', hintText: '4X XX XX XX', labelText: 'رقم الهاتف'),
                   validator: (value) {
                     final digits = (value ?? '').trim();
                     if (digits.length != 8) return 'أدخل رقم هاتف موريتاني صحيح (8 أرقام)';

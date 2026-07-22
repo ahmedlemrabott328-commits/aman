@@ -5,22 +5,20 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
 void main() {
-  runApp(const ProviderScope(child: AmanCaptainApp()));
+  runApp(const ProviderScope(child: AmanCustomerApp()));
 }
 
-class AmanCaptainApp extends ConsumerWidget {
-  const AmanCaptainApp({super.key});
+class AmanCustomerApp extends ConsumerWidget {
+  const AmanCustomerApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
-      title: 'AMAN — الكابتن',
+      title: 'AMAN',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      // العربية هي اللغة الأساسية بالمواصفات؛ الاتجاه RTL يُطبَّق تلقائيًا عبر Directionality
-      // المشتقة من Locale('ar') — لا حاجة لضبط TextDirection يدويًا في كل شاشة.
       locale: const Locale('ar'),
       supportedLocales: const [Locale('ar'), Locale('fr'), Locale('en')],
       localizationsDelegates: const [

@@ -1,5 +1,5 @@
-name: aman_captain
-description: تطبيق الكابتن — منصة AMAN للنقل الذكي
+name: aman_customer
+description: تطبيق الزبون — منصة AMAN للنقل الذكي
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -12,40 +12,29 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # State Management (Riverpod: type-safe, testable, يخدم Clean Architecture و DI المطلوبين بالمواصفات)
   flutter_riverpod: ^2.5.1
-
-  # Navigation
   go_router: ^14.2.0
 
-  # Network
   dio: ^5.5.0
   pretty_dio_logger: ^1.3.1
 
-  # Local/Secure Storage
   flutter_secure_storage: ^9.2.2
 
-  # Realtime (Reverb متوافق مع بروتوكول Pusher)
   pusher_channels_flutter: ^2.4.1
 
-  # الموقع والخرائط (flutter_map + OpenStreetMap: بلا اعتماد على مفتاح Google Maps API)
   geolocator: ^13.0.1
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
+  geocoding: ^3.0.0
 
-  # الإشعارات
   firebase_messaging: ^15.1.0
   flutter_local_notifications: ^17.2.2
 
-  # الطباعة (Cairo + IBM Plex Mono حسب الهوية البصرية لـ AMAN)
   google_fonts: ^6.2.1
 
-  # أدوات عامة
   intl: ^0.19.0
-  image_picker: ^1.1.2
   url_launcher: ^6.3.0
   equatable: ^2.0.5
-  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:

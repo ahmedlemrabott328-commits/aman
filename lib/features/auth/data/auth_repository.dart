@@ -1,6 +1,6 @@
 import '../../../core/network/api_client.dart';
 import '../../../core/storage/token_storage.dart';
-import '../domain/captain.dart';
+import '../domain/customer.dart';
 
 class AuthRepository {
   AuthRepository(this._client, this._tokenStorage);
@@ -15,8 +15,7 @@ class AuthRepository {
     );
   }
 
-  /// التحقق من الرمز وتسجيل الدخول؛ يحفظ التوكن تلقائيًا عند النجاح
-  Future<Captain> verifyOtp({required String phone, required String code, String? fullName}) {
+  Future<Customer> verifyOtp({required String phone, required String code, String? fullName}) {
     return _client.request(
       (dio) => dio.post('/auth/verify-otp', data: {
         'phone': phone,
@@ -25,7 +24,7 @@ class AuthRepository {
       }),
       (data) async {
         await _tokenStorage.save(data['token'] as String);
-        return Captain.fromJson(data['captain'] as Map<String, dynamic>);
+        return Customer.fromJson(data['customer'] as Map<String, dynamic>);
       },
     );
   }
@@ -34,7 +33,7 @@ class AuthRepository {
     try {
       await _client.request((dio) => dio.post('/auth/logout'), (_) => null);
     } finally {
-      await _tokenStorage.clear(); // ننظّف محليًا حتى لو فشل الطلب (لا اتصال مثلاً)
+      await _tokenStorage.clear();
     }
   }
 

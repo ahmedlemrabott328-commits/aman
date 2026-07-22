@@ -3,16 +3,14 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import '../storage/token_storage.dart';
 import 'api_exception.dart';
 
-/// عميل HTTP مركزي لكل استدعاءات captain API.
-/// عنوان الخادم قابل للتغيير عبر --dart-define=API_BASE_URL=... عند البناء
-/// (مختلف بين بيئة التطوير والإنتاج دون تعديل الكود).
+/// عميل HTTP مركزي لكل استدعاءات customer API.
 class ApiClient {
   ApiClient(this._tokenStorage) {
     _dio = Dio(
       BaseOptions(
         baseUrl: const String.fromEnvironment(
           'API_BASE_URL',
-          defaultValue: 'http://10.0.2.2:8000/api/v1/captain', // 10.0.2.2 = localhost عبر محاكي أندرويد
+          defaultValue: 'http://10.0.2.2:8000/api/v1/customer',
         ),
         connectTimeout: const Duration(seconds: 15),
         receiveTimeout: const Duration(seconds: 15),
@@ -32,7 +30,6 @@ class ApiClient {
         onError: (error, handler) async {
           if (error.response?.statusCode == 401) {
             await _tokenStorage.clear();
-            // البث خارجًا يُدار من AuthController عبر GoRouter's redirect؛ هنا فقط ننظّف التوكن
           }
           handler.next(error);
         },
@@ -50,7 +47,6 @@ class ApiClient {
 
   Dio get dio => _dio;
 
-  /// تنفيذ الطلب مع تحويل أخطاء Dio تلقائيًا إلى ApiException قابلة للعرض
   Future<T> request<T>(
     Future<Response<dynamic>> Function(Dio dio) call,
     T Function(dynamic data) parse,

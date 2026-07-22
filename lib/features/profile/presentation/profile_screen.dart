@@ -10,7 +10,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final captain = ref.watch(authControllerProvider).captain;
+    final customer = ref.watch(authControllerProvider).customer;
 
     return Scaffold(
       appBar: AppBar(title: const Text('الملف الشخصي')),
@@ -24,16 +24,22 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   const CircleAvatar(radius: 32, backgroundColor: AppColors.indigo50, child: Icon(Icons.person, size: 32, color: AppColors.indigo500)),
                   const SizedBox(height: 12),
-                  Text(captain?.fullName ?? '', style: Theme.of(context).textTheme.titleLarge),
-                  Text(captain?.phone ?? '', style: AppTheme.tabular(size: 14, color: AppColors.inkSoft)),
+                  Text(customer?.fullName ?? 'زبون AMAN', style: Theme.of(context).textTheme.titleLarge),
+                  Text(customer?.phone ?? '', style: AppTheme.tabular(size: 14, color: AppColors.inkSoft)),
+                  if (customer != null) ...[
+                    const SizedBox(height: 6),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      const Icon(Icons.star_rounded, size: 16, color: AppColors.gold),
+                      Text(' ${customer.ratingAvg.toStringAsFixed(1)}', style: AppTheme.tabular(size: 13)),
+                    ]),
+                  ],
                 ],
               ),
             ),
           ),
           const SizedBox(height: 16),
-          _MenuTile(icon: Icons.description_outlined, label: 'وثائق الحساب', onTap: () => context.push('/documents')),
-          _MenuTile(icon: Icons.account_balance_wallet_outlined, label: 'المحفظة والأرباح', onTap: () => context.push('/wallet')),
           _MenuTile(icon: Icons.history_rounded, label: 'سجل الرحلات', onTap: () => context.push('/history')),
+          _MenuTile(icon: Icons.support_agent_rounded, label: 'الدعم والمساعدة', onTap: () {}),
           const SizedBox(height: 16),
           _MenuTile(
             icon: Icons.logout_rounded,

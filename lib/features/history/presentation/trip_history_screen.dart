@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart' as intl;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
-import '../domain/trip.dart';
-import '../presentation/trip_controller.dart';
+import '../../trip/domain/trip.dart';
+import '../../trip/presentation/trip_controller.dart';
 
 final tripHistoryProvider = FutureProvider.autoDispose((ref) {
   return ref.watch(tripRepositoryProvider).history();
@@ -30,7 +29,7 @@ class TripHistoryScreen extends ConsumerWidget {
         error: (_, __) => Center(child: Text('تعذّر تحميل السجل', style: Theme.of(context).textTheme.bodyMedium)),
         data: (trips) {
           if (trips.isEmpty) {
-            return Center(child: Text('لا توجد رحلات سابقة بعد', style: Theme.of(context).textTheme.bodyMedium));
+            return Center(child: Text('لم تقم بأي رحلة بعد', style: Theme.of(context).textTheme.bodyMedium));
           }
           return RefreshIndicator(
             onRefresh: () => ref.refresh(tripHistoryProvider.future),
@@ -62,7 +61,7 @@ class _TripTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(trip.tripCode, style: AppTheme.tabular(size: 14, weight: FontWeight.w700, color: AppColors.inkSoft)),
+                Text(trip.tripCode, style: AppTheme.tabular(size: 13, weight: FontWeight.w700, color: AppColors.inkSoft)),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -78,16 +77,11 @@ class _TripTile extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text(trip.pickup.address, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium),
+            Text(trip.dropoff?.address ?? trip.pickup.address, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 6),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${trip.finalPrice?.toStringAsFixed(0) ?? trip.estimatedPrice?.toStringAsFixed(0) ?? '—'} ${trip.currency}',
-                  style: AppTheme.tabular(size: 15, weight: FontWeight.w700),
-                ),
-              ],
+            Text(
+              '${trip.finalPrice?.toStringAsFixed(0) ?? trip.estimatedPrice?.toStringAsFixed(0) ?? '—'} ${trip.currency}',
+              style: AppTheme.tabular(size: 15, weight: FontWeight.w700),
             ),
           ],
         ),

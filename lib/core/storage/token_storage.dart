@@ -5,7 +5,7 @@ class TokenStorage {
   TokenStorage(this._storage);
 
   final FlutterSecureStorage _storage;
-  static const _tokenKey = 'aman_captain_token';
+  static const _tokenKey = 'aman_customer_token';
 
   Future<void> save(String token) => _storage.write(key: _tokenKey, value: token);
 
